@@ -121,7 +121,7 @@ resource "aws_lb" "consul" {
 
   name            = random_id.consul_lb[count.index].hex
   internal        = var.is_internal_lb ? true : false
-  subnets         = [var.subnet_ids]
+  subnets         = var.subnet_ids
   security_groups = [aws_security_group.consul_lb[count.index].id]
   tags            = merge(var.tags, map("Name", format("%s-consul-lb", var.name)))
 
