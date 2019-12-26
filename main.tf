@@ -229,14 +229,14 @@ resource "aws_lb_target_group" "consul_https_8080" {
 resource "aws_lb_listener" "consul_443" {
   count = var.create && var.use_lb_cert ? 1 : 0
 
-  load_balancer_arn = aws_lb.consul.arn
+  load_balancer_arn = aws_lb.consul[count.index].arn
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = var.lb_ssl_policy
-  certificate_arn   = aws_iam_server_certificate.consul.arn
+  certificate_arn   = aws_iam_server_certificate.consul[count.index].arn
 
   default_action {
-    target_group_arn = aws_lb_target_group.consul_https_8080.arn
+    target_group_arn = aws_lb_target_group.consul_https_8080[count.index].arn
     type             = "forward"
   }
 }
@@ -244,14 +244,14 @@ resource "aws_lb_listener" "consul_443" {
 resource "aws_lb_listener" "consul_8080" {
   count = var.create && var.use_lb_cert ? 1 : 0
 
-  load_balancer_arn = aws_lb.consul.arn
+  load_balancer_arn = aws_lb.consul[count.index].arn
   port              = "8080"
   protocol          = "HTTPS"
   ssl_policy        = var.lb_ssl_policy
-  certificate_arn   = aws_iam_server_certificate.consul.arn
+  certificate_arn   = aws_iam_server_certificate.consul[count.index].arn
 
   default_action {
-    target_group_arn = aws_lb_target_group.consul_https_8080.arn
+    target_group_arn = aws_lb_target_group.consul_https_8080[count.index].arn
     type             = "forward"
   }
 }
