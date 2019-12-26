@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 0.11.5"
+  required_version = ">= 0.12"
 }
 
 resource "aws_security_group" "consul_lb" {
@@ -23,7 +23,7 @@ resource "aws_security_group_rule" "consul_lb_http_80" {
 }
 
 resource "aws_security_group_rule" "consul_lb_https_443" {
-  count = "${var.create && var.use_lb_cert ? 1 : 0}"
+  count = var.create && var.use_lb_cert ? 1 : 0
 
   security_group_id = aws_security_group.consul_lb.id
   type              = "ingress"
@@ -56,7 +56,7 @@ resource "aws_security_group_rule" "consul_lb_tcp_8080" {
 }
 
 resource "aws_security_group_rule" "outbound_tcp" {
-  count = "${var.create ? 1 : 0}"
+  count = var.create ? 1 : 0
 
   security_group_id = aws_security_group.consul_lb.id
   type              = "egress"
@@ -67,18 +67,18 @@ resource "aws_security_group_rule" "outbound_tcp" {
 }
 
 resource "random_id" "consul_lb_access_logs" {
-  count = "${var.create && !var.lb_bucket_override ? 1 : 0}"
+  count = var.create && !var.lb_bucket_override ? 1 : 0
 
   byte_length = 4
   prefix      = format("%s-consul-lb-access-logs-", var.name)
 }
 
 data "aws_elb_service_account" "consul_lb_access_logs" {
-  count = "${var.create && !var.lb_bucket_override ? 1 : 0}"
+  count = var.create && !var.lb_bucket_override ? 1 : 0
 }
 
 resource "aws_s3_bucket" "consul_lb_access_logs" {
-  count = "${var.create && !var.lb_bucket_override ? 1 : 0}"
+  count = var.create && !var.lb_bucket_override ? 1 : 0
 
   bucket = random_id.consul_lb_access_logs.hex
   acl    = "private"
