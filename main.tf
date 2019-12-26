@@ -119,10 +119,10 @@ resource "random_id" "consul_lb" {
 resource "aws_lb" "consul" {
   count = var.create ? 1 : 0
 
-  name            = random_id.consul_lb.hex
+  name            = random_id.consul_lb[count.index].hex
   internal        = var.is_internal_lb ? true : false
   subnets         = [var.subnet_ids]
-  security_groups = [aws_security_group.consul_lb.id]
+  security_groups = [aws_security_group.consul_lb[count.index].id]
   tags            = merge(var.tags, map("Name", format("%s-consul-lb", var.name)))
 
   access_logs {
