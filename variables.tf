@@ -14,12 +14,12 @@ variable "vpc_id" {
 
 variable "cidr_blocks" {
   description = "CIDR blocks to provision LB across."
-  type        = "list"
+  type        = list(string)
 }
 
 variable "subnet_ids" {
   description = "Subnet ID(s) to provision LB across."
-  type        = "list"
+  type        = list(string)
 }
 
 variable "is_internal_lb" {
