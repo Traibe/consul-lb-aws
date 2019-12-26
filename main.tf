@@ -190,11 +190,11 @@ resource "aws_lb_listener" "consul_8500" {
 resource "aws_iam_server_certificate" "consul" {
   count = var.create && var.use_lb_cert ? 1 : 0
 
-  name              = random_id.consul_lb.hex
+  name              = random_id.consul_lb[count.index].hex
   certificate_body  = var.lb_cert
   private_key       = var.lb_private_key
   certificate_chain = var.lb_cert_chain
-  path              = "/${var.name}-${random_id.consul_lb.hex}/"
+  path              = "/${var.name}-${random_id.consul_lb[count.index].hex}/"
 }
 
 resource "random_id" "consul_https_8080" {
