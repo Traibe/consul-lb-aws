@@ -164,12 +164,12 @@ resource "aws_lb_target_group" "consul_http_8500" {
 resource "aws_lb_listener" "consul_80" {
   count = var.create ? 1 : 0
 
-  load_balancer_arn = aws_lb.consul.arn
+  load_balancer_arn = aws_lb.consul[count.index].arn
   port              = "80"
   protocol          = "HTTP"
 
   default_action {
-    target_group_arn = aws_lb_target_group.consul_http_8500.arn
+    target_group_arn = aws_lb_target_group.consul_http_8500[count.index].arn
     type             = "forward"
   }
 }
@@ -177,12 +177,12 @@ resource "aws_lb_listener" "consul_80" {
 resource "aws_lb_listener" "consul_8500" {
   count = var.create ? 1 : 0
 
-  load_balancer_arn = aws_lb.consul.arn
+  load_balancer_arn = aws_lb.consul[count.index].arn
   port              = "8500"
   protocol          = "HTTP"
 
   default_action {
-    target_group_arn = aws_lb_target_group.consul_http_8500.arn
+    target_group_arn = aws_lb_target_group.consul_http_8500[count.index].arn
     type             = "forward"
   }
 }
