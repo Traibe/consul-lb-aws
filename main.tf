@@ -14,7 +14,7 @@ resource "aws_security_group" "consul_lb" {
 resource "aws_security_group_rule" "consul_lb_http_80" {
   count = var.create ? 1 : 0
 
-  security_group_id = aws_security_group.consul_lb.id
+  security_group_id = aws_security_group.consul_lb[count.index].id
   type              = "ingress"
   protocol          = "tcp"
   from_port         = 80
@@ -25,7 +25,7 @@ resource "aws_security_group_rule" "consul_lb_http_80" {
 resource "aws_security_group_rule" "consul_lb_https_443" {
   count = var.create && var.use_lb_cert ? 1 : 0
 
-  security_group_id = aws_security_group.consul_lb.id
+  security_group_id = aws_security_group.consul_lb[count.index].id
   type              = "ingress"
   protocol          = "tcp"
   from_port         = 443
@@ -36,7 +36,7 @@ resource "aws_security_group_rule" "consul_lb_https_443" {
 resource "aws_security_group_rule" "consul_lb_tcp_8500" {
   count = var.create ? 1 : 0
 
-  security_group_id = aws_security_group.consul_lb.id
+  security_group_id = aws_security_group.consul_lb[count.index].id
   type              = "ingress"
   protocol          = "tcp"
   from_port         = 8500
@@ -47,7 +47,7 @@ resource "aws_security_group_rule" "consul_lb_tcp_8500" {
 resource "aws_security_group_rule" "consul_lb_tcp_8080" {
   count = var.create ? 1 : 0
 
-  security_group_id = aws_security_group.consul_lb.id
+  security_group_id = aws_security_group.consul_lb[count.index].id
   type              = "ingress"
   protocol          = "tcp"
   from_port         = 8080
@@ -58,7 +58,7 @@ resource "aws_security_group_rule" "consul_lb_tcp_8080" {
 resource "aws_security_group_rule" "outbound_tcp" {
   count = var.create ? 1 : 0
 
-  security_group_id = aws_security_group.consul_lb.id
+  security_group_id = aws_security_group.consul_lb[count.index].id
   type              = "egress"
   protocol          = "tcp"
   from_port         = 0
@@ -80,7 +80,7 @@ data "aws_elb_service_account" "consul_lb_access_logs" {
 resource "aws_s3_bucket" "consul_lb_access_logs" {
   count = var.create && !var.lb_bucket_override ? 1 : 0
 
-  bucket = random_id.consul_lb_access_logs.hex
+  bucket = random_id.consul_lb_access_logs[count.index].hex
   acl    = "private"
   tags   = merge(var.tags, map("Name", format("%s-consul-lb-access-logs", var.name)))
 
@@ -97,10 +97,10 @@ resource "aws_s3_bucket" "consul_lb_access_logs" {
       "Action": [
         "s3:PutObject"
       ],
-      "Resource": "arn:aws:s3:::${random_id.consul_lb_access_logs.hex}${var.lb_bucket_prefix != "" ? format("//", var.lb_bucket_prefix) : ""}/AWSLogs/*",
+      "Resource": "arn:aws:s3:::${random_id.consul_lb_access_logs[count.index].hex}${var.lb_bucket_prefix != "" ? format("//", var.lb_bucket_prefix) : ""}/AWSLogs/*",
       "Principal": {
         "AWS": [
-          "${data.aws_elb_service_account.consul_lb_access_logs.arn}"
+          "${data.aws_elb_service_account.consul_lb_access_logs[count.index].arn}"
         ]
       }
     }
@@ -142,7 +142,7 @@ resource "random_id" "consul_http_8500" {
 resource "aws_lb_target_group" "consul_http_8500" {
   count = var.create ? 1 : 0
 
-  name     = random_id.consul_http_8500.hex
+  name     = random_id.consul_http_8500[count.index].hex
   vpc_id   = var.vpc_id
   port     = 8500
   protocol = "HTTP"
