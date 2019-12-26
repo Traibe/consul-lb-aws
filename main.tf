@@ -7,8 +7,8 @@ resource "aws_security_group" "consul_lb" {
 
   name_prefix = "${var.name}-consul-lb-"
   description = "Security group for consul ${var.name} LB"
-  vpc_id      = "${var.vpc_id}"
-  tags        = "${merge(var.tags, map("Name", format("%s-consul-lb", var.name)))}"
+  vpc_id      = var.vpc_id
+  tags        = merge(var.tags, map("Name", format("%s-consul-lb", var.name)))
 }
 
 resource "aws_security_group_rule" "consul_lb_http_80" {
@@ -119,11 +119,11 @@ resource "random_id" "consul_lb" {
 resource "aws_lb" "consul" {
   count = var.create ? 1 : 0
 
-  name            = "${random_id.consul_lb.hex}"
+  name            = random_id.consul_lb.hex
   internal        = "${var.is_internal_lb ? true : false}"
-  subnets         = ["${var.subnet_ids}"]
-  security_groups = ["${aws_security_group.consul_lb.id}"]
-  tags            = "${merge(var.tags, map("Name", format("%s-consul-lb", var.name)))}"
+  subnets         = [var.subnet_ids]
+  security_groups = [aws_security_group.consul_lb.id]
+  tags            = merge(var.tags, map("Name", format("%s-consul-lb", var.name)))
 
   access_logs {
     bucket  = var.lb_bucket_override ? var.lb_bucket : element(concat(aws_s3_bucket.consul_lb_access_logs.*.id, list("")), 0)
@@ -146,7 +146,7 @@ resource "aws_lb_target_group" "consul_http_8500" {
   vpc_id   = var.vpc_id
   port     = 8500
   protocol = "HTTP"
-  tags     = "${merge(var.tags, map("Name", format("%s-consul-http-8500", var.name)))}"
+  tags     = merge(var.tags, map("Name", format("%s-consul-http-8500", var.name)))
 
   health_check {
     interval = 15
@@ -211,7 +211,7 @@ resource "aws_lb_target_group" "consul_https_8080" {
   vpc_id   = var.vpc_id
   port     = 8080
   protocol = "HTTPS"
-  tags     = "${merge(var.tags, map("Name", format("%s-consul-https-8080", var.name)))}"
+  tags     = merge(var.tags, map("Name", format("%s-consul-https-8080", var.name)))
 
   health_check {
     interval = 15
