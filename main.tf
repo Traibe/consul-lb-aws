@@ -188,7 +188,7 @@ resource "aws_lb_listener" "consul_8500" {
 }
 
 resource "aws_iam_server_certificate" "consul" {
-  count = "${var.create && var.use_lb_cert ? 1 : 0}"
+  count = var.create && var.use_lb_cert ? 1 : 0
 
   name              = random_id.consul_lb.hex
   certificate_body  = var.lb_cert
@@ -198,14 +198,14 @@ resource "aws_iam_server_certificate" "consul" {
 }
 
 resource "random_id" "consul_https_8080" {
-  count = "${var.create && var.use_lb_cert ? 1 : 0}"
+  count = var.create && var.use_lb_cert ? 1 : 0
 
   byte_length = 4
   prefix      = "consul-https-8080-"
 }
 
 resource "aws_lb_target_group" "consul_https_8080" {
-  count = "${var.create && var.use_lb_cert ? 1 : 0}"
+  count = var.create && var.use_lb_cert ? 1 : 0
 
   name     = random_id.consul_https_8080.hex
   vpc_id   = var.vpc_id
@@ -227,7 +227,7 @@ resource "aws_lb_target_group" "consul_https_8080" {
 }
 
 resource "aws_lb_listener" "consul_443" {
-  count = "${var.create && var.use_lb_cert ? 1 : 0}"
+  count = var.create && var.use_lb_cert ? 1 : 0
 
   load_balancer_arn = aws_lb.consul.arn
   port              = "443"
@@ -242,7 +242,7 @@ resource "aws_lb_listener" "consul_443" {
 }
 
 resource "aws_lb_listener" "consul_8080" {
-  count = "${var.create && var.use_lb_cert ? 1 : 0}"
+  count = var.create && var.use_lb_cert ? 1 : 0
 
   load_balancer_arn = aws_lb.consul.arn
   port              = "8080"
