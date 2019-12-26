@@ -74,6 +74,6 @@ variable "lb_logs_enabled" {
 
 variable "tags" {
   description = "Optional map of tags to set on resources, defaults to empty map."
-  type        = "map"
+  type        = map(string)
   default     = {}
 }
