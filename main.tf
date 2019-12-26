@@ -19,7 +19,7 @@ resource "aws_security_group_rule" "consul_lb_http_80" {
   protocol          = "tcp"
   from_port         = 80
   to_port           = 80
-  cidr_blocks       = [split(",", var.is_internal_lb ? join(",", var.cidr_blocks) : "0.0.0.0/0")]
+  cidr_blocks       = var.is_internal_lb ? var.cidr_blocks : ["0.0.0.0/0"]
 }
 
 resource "aws_security_group_rule" "consul_lb_https_443" {
@@ -30,7 +30,7 @@ resource "aws_security_group_rule" "consul_lb_https_443" {
   protocol          = "tcp"
   from_port         = 443
   to_port           = 443
-  cidr_blocks       = [split(",", var.is_internal_lb ? join(",", var.cidr_blocks) : "0.0.0.0/0")]
+  cidr_blocks       = var.is_internal_lb ? var.cidr_blocks : ["0.0.0.0/0"]
 }
 
 resource "aws_security_group_rule" "consul_lb_tcp_8500" {
@@ -41,7 +41,7 @@ resource "aws_security_group_rule" "consul_lb_tcp_8500" {
   protocol          = "tcp"
   from_port         = 8500
   to_port           = 8500
-  cidr_blocks       = [split(",", var.is_internal_lb ? join(",", var.cidr_blocks) : "0.0.0.0/0")]
+  cidr_blocks       = var.is_internal_lb ? var.cidr_blocks : ["0.0.0.0/0"]
 }
 
 resource "aws_security_group_rule" "consul_lb_tcp_8080" {
@@ -52,7 +52,7 @@ resource "aws_security_group_rule" "consul_lb_tcp_8080" {
   protocol          = "tcp"
   from_port         = 8080
   to_port           = 8080
-  cidr_blocks       = [split(",", var.is_internal_lb ? join(",", var.cidr_blocks) : "0.0.0.0/0")]
+  cidr_blocks       = var.is_internal_lb ? var.cidr_blocks : ["0.0.0.0/0"]
 }
 
 resource "aws_security_group_rule" "outbound_tcp" {
@@ -207,7 +207,7 @@ resource "random_id" "consul_https_8080" {
 resource "aws_lb_target_group" "consul_https_8080" {
   count = var.create && var.use_lb_cert ? 1 : 0
 
-  name     = random_id.consul_https_8080.hex
+  name     = random_id.consul_https_8080[count.index].hex
   vpc_id   = var.vpc_id
   port     = 8080
   protocol = "HTTPS"
